@@ -51,8 +51,8 @@ getSync({
 import { getSync } from '@grupo-gcb/fast-ssm';
 
 getSync({
-  path: '/adiante/microservices/adiante-cliente/host',
-  default: process.env.ADIANTE_CLIENTE_URL,
+  path: '/path/to/value',
+  default: process.env.SOME_VARIABLE,
   cacheTime: 10,
   logLevel: 'debug',
   region: 'us-east-2',

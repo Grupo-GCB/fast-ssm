@@ -1,10 +1,13 @@
 {
-  "name": "fast-ssm",
+  "name": "@grupo-gcb/fast-ssm",
   "version": "1.0.0",
   "description": "Fast SSM is a simple and lightweight lib to get parameter-score values from AWS with caching strategies.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "prepublish": "tsc",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/"
+  },
   "engines": {
     "node": ">=10.0.0"
   },

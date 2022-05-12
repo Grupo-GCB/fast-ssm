@@ -2,22 +2,23 @@ import { GetParams, LogLevel, Cache } from './types';
 import { getSsmSync } from './ssm';
 import { getMiliseconds } from './utils';
 
-const logLevel: LogLevel = 'error';
-const throwError = false;
-const defaultCacheTime = 30;
-const local = false;
-const region = 'us-east-1';
+let logLevel: LogLevel = 'error';
+let throwError = false;
+let defaultCacheTime = 30;
+let region = 'us-east-1';
 const cache: Cache = {};
 
 export function getSync(params: GetParams): string | null {
+  logLevel = params.logLevel || logLevel;
+  if (params.throwError !== undefined) throwError = params.throwError;
+  defaultCacheTime = params.cacheTime || defaultCacheTime;
+  region = params.region || region;
+
   logger(`Stating FastSsm whith configs: 
       - logLevel: ${logLevel}; 
       - throwError: ${throwError}; 
       - defaultCacheTime: ${defaultCacheTime}; 
-      - local: ${local}; 
       - region: ${region}`);
-
-  if (local) return params.default || null;
 
   const fromCache = getFromCache(params.path, params.cacheTime);
   if (fromCache?.expired === false) {

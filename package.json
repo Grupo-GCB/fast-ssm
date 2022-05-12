@@ -5,9 +5,6 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "prepublish": "tsc",
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com/"
-  },
   "engines": {
     "node": ">=10.0.0"
   },

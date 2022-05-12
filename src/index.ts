@@ -3,7 +3,7 @@ import { getSsmSync } from './ssm';
 import { getMiliseconds } from './utils';
 
 const logLevel: LogLevel = 'error';
-const throwError = true;
+const throwError = false;
 const defaultCacheTime = 30;
 const local = false;
 const region = 'us-east-1';

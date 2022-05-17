@@ -32,6 +32,7 @@ export function getSync(params: GetParams): string | null {
     logger(`getting "${params.path}" from ssm..`);
     fromSsm = getSsmSync(params.path, region);
   } catch (error) {
+    logger(`error to get path ${params.path} from ssm: ${error}`, true);
     if (throwError) throw new Error(error as string);
   }
 

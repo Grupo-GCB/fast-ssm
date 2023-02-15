@@ -1,8 +1,7 @@
-import { spawnSync } from 'child_process';
 import { AWSParameterStore } from './aws-parameter-store';
-import { Redis, rl } from './redis';
 import { getSsmSync } from './ssm';
 import { Cache, GetParams, LogLevel } from './types';
+import { Cache as CacheClass } from './cache';
 import { getMiliseconds } from './utils';
 
 let logLevel: LogLevel = 'error';
@@ -10,42 +9,57 @@ let throwError = false;
 let defaultCacheTime = 30;
 let region = 'us-east-1';
 const cache: Cache = {};
+const FIVE_HOURS_IN_MS = 5 * 60 * 60 * 1000;
 
 export namespace IGetSync {
   export type Params = {
     path: string;
     region?: string;
+    cacheTime?: number;
   };
   export type Result = string;
 }
 
-export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params): IGetSync.Result {
-  Redis.setupRedisClient();
-  const bufferFromCache = spawnSync('node', [__dirname, './redis'], {
-    input: path,
-    maxBuffer: 4000000,
-  });
+export namespace IVerifyByManyPathsSync {
+  export type Params = {
+    paths: string[];
+    region?: string;
+  };
+  export type Result = boolean;
+}
 
-  rl.close();
+export function getParameterSync({
+  path,
+  region = 'us-east-1',
+  cacheTime = FIVE_HOURS_IN_MS,
+}: IGetSync.Params): IGetSync.Result {
+  const valueFromCache = CacheClass.get(path);
 
-  const valueFromCache = bufferFromCache.output.toString().split(',')[1].replace('\n', '');
-
-  if (valueFromCache !== 'null') {
-    Redis.disconnectRedisClient();
+  if (valueFromCache) {
     return valueFromCache;
   }
-  
+
   const valueFromSSM = AWSParameterStore.getParameter(path, region);
-  
+
   if (valueFromSSM) {
-    Redis.save(path, valueFromSSM);
-    Redis.disconnectRedisClient();
-    rl.close();
+    CacheClass.set(path, valueFromSSM, cacheTime);
     return valueFromSSM;
   }
-  
-  Redis.disconnectRedisClient();
+
   return '';
+}
+
+export function verifyByManyPathsSync({
+  paths,
+  region,
+}: IVerifyByManyPathsSync.Params): IVerifyByManyPathsSync.Result {
+  paths.forEach(path => {
+    const value = getParameterSync({ path, region, cacheTime: 0 });
+
+    if (!value) throw new Error(`fast-ssm: value from ${path} returned null`);
+  });
+
+  return true;
 }
 
 export function getSync(params: GetParams): string | null {

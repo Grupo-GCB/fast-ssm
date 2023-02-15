@@ -20,6 +20,7 @@ export namespace IGetSync {
 }
 
 export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params): IGetSync.Result {
+  Redis.setupRedisClient();
   const bufferFromCache = spawnSync('node', [__dirname, './redis'], {
     input: path,
     maxBuffer: 4000000,
@@ -27,18 +28,25 @@ export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params
 
   rl.close();
 
-  const valueFromCache = bufferFromCache.output.toString();
+  const valueFromCache = bufferFromCache.output.toString().split(',')[1].replace('\n', '');
 
-  if (valueFromCache) return valueFromCache;
-
+  if (valueFromCache !== 'null') {
+    console.log('from cache', valueFromCache)
+    Redis.disconnectRedisClient();
+    return valueFromCache;
+  }
+  
   const valueFromSSM = AWSParameterStore.getParameter(path, region);
-
+  
   if (valueFromSSM) {
     Redis.save(path, valueFromSSM);
+    Redis.disconnectRedisClient();
     rl.close();
     return valueFromSSM;
   }
-
+  
+  console.log('from fodase', valueFromSSM)
+  Redis.disconnectRedisClient();
   return '';
 }
 

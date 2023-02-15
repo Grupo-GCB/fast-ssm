@@ -12,11 +12,23 @@ rl.on('line', (input) => {
 })
 
 export class Redis {
-  private static redisClient: RedisClient = new RedisClient({
-    host: AWSParameterStore.getParameter('/adiante/database/redis/host') ?? undefined,
-    port: Number(AWSParameterStore.getParameter('/adiante/database/redis/port')) ?? undefined,
-    commandTimeout: 3000,
-  });
+  static redisClient: RedisClient;
+
+  static setupRedisClient() {
+    this.redisClient = new RedisClient({
+      host: AWSParameterStore.getParameter('/adiante/database/redis/host') ?? undefined,
+      port: Number(AWSParameterStore.getParameter('/adiante/database/redis/port')) ?? undefined,
+      commandTimeout: 3000,
+    })
+
+    this.redisClient.on('error', (error) => {
+      console.log(error);
+    })
+  }
+
+  static disconnectRedisClient() {
+    this.redisClient.disconnect();
+  }
 
   static async save(key: string, value: string): Promise<void> {
     try {
@@ -28,14 +40,11 @@ export class Redis {
 
   static async get(key: string): Promise<void> {
     try {
-      const result = await this.redisClient.get(key)
-
-      if (result === null) {
-        console.log(result);
-      }
-
-      return console.log(result)
-
+      return this.redisClient.get(key).then(result => {
+        console.log(result)
+      }).catch(error => {
+        console.log(null)
+      })
     } catch (error) {
       // throw new Error(error as string); 
       console.log(null);

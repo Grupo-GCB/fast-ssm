@@ -1,4 +1,4 @@
-class Config {
+export class Config {
   region = 'us-east-1';
 
   static get region(): string {

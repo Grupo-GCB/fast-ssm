@@ -1,5 +1,8 @@
-import { GetParams, LogLevel, Cache } from './types';
+import { spawnSync } from 'child_process';
+import { AWSParameterStore } from './aws-parameter-store';
+import { Redis } from './redis';
 import { getSsmSync } from './ssm';
+import { Cache, GetParams, LogLevel } from './types';
 import { getMiliseconds } from './utils';
 
 let logLevel: LogLevel = 'error';
@@ -7,6 +10,36 @@ let throwError = false;
 let defaultCacheTime = 30;
 let region = 'us-east-1';
 const cache: Cache = {};
+
+export namespace IGetSync {
+  export type Params = {
+    path: string;
+    region?: string;
+  };
+  export type Result = string;
+}
+
+export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params): IGetSync.Result {
+  Config.region = region;
+
+  const bufferFromCache = spawnSync('node', [__dirname, './redis'], {
+    input: path,
+    maxBuffer: 4000000,
+  });
+
+  const valueFromCache = bufferFromCache.output.toString();
+
+  if (valueFromCache) return valueFromCache;
+
+  const valueFromSSM = AWSParameterStore.getParameter(path);
+
+  if (valueFromSSM) {
+    Redis.save(path, valueFromSSM);
+    return valueFromSSM;
+  }
+
+  return '';
+}
 
 export function getSync(params: GetParams): string | null {
   logLevel = params.logLevel || logLevel;

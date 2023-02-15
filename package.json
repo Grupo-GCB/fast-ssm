@@ -1,6 +1,6 @@
 {
   "name": "@grupo-gcb/fast-ssm",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Fast SSM is a simple and lightweight lib to get parameter-score values from AWS with caching strategies.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -58,6 +58,7 @@
   "dependencies": {
     "@types/aws-param-store": "^2.1.2",
     "aws-param-store": "^3.2.0",
-    "aws-sdk": "^2.1131.0"
+    "aws-sdk": "^2.1131.0",
+    "ioredis": "^5.3.1"
   }
 }

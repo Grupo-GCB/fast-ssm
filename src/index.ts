@@ -20,6 +20,14 @@ export namespace IGetSync {
   export type Result = string;
 }
 
+export namespace IVerifyByManyPathsSync {
+  export type Params = {
+    paths: string[];
+    region?: string;
+  };
+  export type Result = boolean;
+}
+
 export function getParameterSync({
   path,
   region = 'us-east-1',
@@ -39,6 +47,19 @@ export function getParameterSync({
   }
 
   return '';
+}
+
+export function verifyByManyPathsSync({
+  paths,
+  region,
+}: IVerifyByManyPathsSync.Params): IVerifyByManyPathsSync.Result {
+  paths.forEach(path => {
+    const value = getParameterSync({ path, region, cacheTime: 0 });
+
+    if (!value) throw new Error(`fast-ssm: value from ${path} returned null`);
+  });
+
+  return true;
 }
 
 export function getSync(params: GetParams): string | null {

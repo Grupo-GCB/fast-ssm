@@ -15,7 +15,6 @@ export class Redis {
   private static redisClient: RedisClient = new RedisClient({
     host: AWSParameterStore.getParameter('/adiante/database/redis/host') ?? undefined,
     port: Number(AWSParameterStore.getParameter('/adiante/database/redis/port')) ?? undefined,
-    password: AWSParameterStore.getParameter('/adiante/database/redis/password') ?? undefined,
     commandTimeout: 3000,
   });
 

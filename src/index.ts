@@ -1,6 +1,6 @@
 import { spawnSync } from 'child_process';
 import { AWSParameterStore } from './aws-parameter-store';
-import { Redis } from './redis';
+import { Redis, rl } from './redis';
 import { getSsmSync } from './ssm';
 import { Cache, GetParams, LogLevel } from './types';
 import { getMiliseconds } from './utils';
@@ -20,10 +20,12 @@ export namespace IGetSync {
 }
 
 export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params): IGetSync.Result {
-  const bufferFromCache = spawnSync('node', [__dirname, './redis'], {
+  const bufferFromCache = spawnSync('node', [__dirname, './get-from-redis'], {
     input: path,
     maxBuffer: 4000000,
   });
+
+  rl.close();
 
   const valueFromCache = bufferFromCache.output.toString();
 
@@ -33,6 +35,7 @@ export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params
 
   if (valueFromSSM) {
     Redis.save(path, valueFromSSM);
+    rl.close();
     return valueFromSSM;
   }
 

@@ -1,3 +1,4 @@
+import { Config } from './config';
 import { spawnSync } from 'child_process';
 import { AWSParameterStore } from './aws-parameter-store';
 import { Redis } from './redis';

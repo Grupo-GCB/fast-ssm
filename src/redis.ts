@@ -8,7 +8,7 @@ const rl = readline.createInterface({
 })
 
 rl.on('line', (input) => {
-  Redis.get(JSON.parse(input)[0]);
+  Redis.get(input);
 })
 
 export class Redis {

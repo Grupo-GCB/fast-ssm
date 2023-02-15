@@ -2,14 +2,13 @@ import { AWSParameterStore } from './aws-parameter-store';
 import RedisClient from 'ioredis';
 import readline from 'readline';
 
-const rl = readline.createInterface({
+export const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
 })
 
 rl.on('line', (input) => {
   Redis.get(input);
-  rl.close();
 })
 
 export class Redis {

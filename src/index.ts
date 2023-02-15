@@ -1,4 +1,3 @@
-import { Config } from './config';
 import { spawnSync } from 'child_process';
 import { AWSParameterStore } from './aws-parameter-store';
 import { Redis } from './redis';
@@ -21,8 +20,6 @@ export namespace IGetSync {
 }
 
 export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params): IGetSync.Result {
-  Config.region = region;
-
   const bufferFromCache = spawnSync('node', [__dirname, './redis'], {
     input: path,
     maxBuffer: 4000000,
@@ -32,7 +29,7 @@ export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params
 
   if (valueFromCache) return valueFromCache;
 
-  const valueFromSSM = AWSParameterStore.getParameter(path);
+  const valueFromSSM = AWSParameterStore.getParameter(path, region);
 
   if (valueFromSSM) {
     Redis.save(path, valueFromSSM);

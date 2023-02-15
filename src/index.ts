@@ -20,7 +20,7 @@ export namespace IGetSync {
 }
 
 export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params): IGetSync.Result {
-  const bufferFromCache = spawnSync('node', [__dirname, './get-from-redis'], {
+  const bufferFromCache = spawnSync('node', [__dirname, './redis'], {
     input: path,
     maxBuffer: 4000000,
   });

@@ -31,7 +31,6 @@ export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params
   const valueFromCache = bufferFromCache.output.toString().split(',')[1].replace('\n', '');
 
   if (valueFromCache !== 'null') {
-    console.log('from cache', valueFromCache)
     Redis.disconnectRedisClient();
     return valueFromCache;
   }
@@ -45,7 +44,6 @@ export function getParameterSync({ path, region = 'us-east-1' }: IGetSync.Params
     return valueFromSSM;
   }
   
-  console.log('from fodase', valueFromSSM)
   Redis.disconnectRedisClient();
   return '';
 }

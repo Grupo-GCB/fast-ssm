@@ -1,9 +1,8 @@
 import { getParameterSync } from 'aws-param-store';
-import { Config } from './config';
 
 export class AWSParameterStore {
-  static getParameter(path: string): string | null {
-    const result = getParameterSync(path, { region: Config.region });
+  static getParameter(path: string, region = 'us-east-1'): string | null {
+    const result = getParameterSync(path, { region });
 
     return result.Value ?? null;
   }

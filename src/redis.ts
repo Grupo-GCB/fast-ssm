@@ -9,6 +9,7 @@ const rl = readline.createInterface({
 
 rl.on('line', (input) => {
   Redis.get(input);
+  rl.close();
 })
 
 export class Redis {
@@ -34,7 +35,7 @@ export class Redis {
         console.log(result);
       }
 
-      return console.log(JSON.parse(<string>result))
+      return console.log(result)
 
     } catch (error) {
       // throw new Error(error as string); 

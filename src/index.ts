@@ -16,6 +16,7 @@ export namespace IGetSync {
     path: string;
     region?: string;
     cacheTime?: number;
+    decrypt?: boolean;
   };
   export type Result = string;
 }
@@ -32,6 +33,7 @@ export function getParameterSync({
   path,
   region = 'us-east-1',
   cacheTime = FIVE_HOURS_IN_MS,
+  decrypt = false,
 }: IGetSync.Params): IGetSync.Result {
   const valueFromCache = CacheClass.get(path);
 
@@ -39,7 +41,7 @@ export function getParameterSync({
     return valueFromCache;
   }
 
-  const valueFromSSM = AWSParameterStore.getParameter(path, region);
+  const valueFromSSM = AWSParameterStore.getParameter(path, region, decrypt);
 
   if (valueFromSSM) {
     CacheClass.set(path, valueFromSSM, cacheTime);

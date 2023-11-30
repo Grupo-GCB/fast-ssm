@@ -29,6 +29,9 @@ export namespace IVerifyByManyPathsSync {
   export type Result = boolean;
 }
 
+/**
+ * @deprecated Esse método será removido em 31/12/2023. Por favor, utilize o "getSync".
+ */
 export function getParameterSync({
   path,
   region = 'us-east-1',

@@ -74,7 +74,14 @@ export function getSync(params: GetParams): string | null {
       - logLevel: ${logLevel}; 
       - throwError: ${throwError}; 
       - defaultCacheTime: ${defaultCacheTime}; 
-      - region: ${region}`);
+      - region: ${region}
+      - localhostMode: ${params.localhostMode}`);
+
+  if(params.localhostMode) {
+    logger('get from default');
+
+    return params.default;
+  }
 
   const fromCache = getFromCache(params.path, params.cacheTime);
   if (fromCache?.expired === false) {

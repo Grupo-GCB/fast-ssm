@@ -80,7 +80,7 @@ export function getSync(params: GetParams): string | null {
   if(params.localhostMode) {
     logger('get from default');
 
-    return params.default;
+    return params.default as string | null;
   }
 
   const fromCache = getFromCache(params.path, params.cacheTime);
